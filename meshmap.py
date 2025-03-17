@@ -53,7 +53,7 @@ def create_map(nodes):
                 # Hole den SNR-Wert sicher
                 snr = node.get('snr', None)
                 
-                # Hole den Batteriestatus sicher, falls 'deviceMetrics' existiert
+                # Hole den Batteriestatus, falls 'deviceMetrics' existiert
                 battery_level = node.get('deviceMetrics', {}).get('batteryLevel', 'unbekannt')
 
                 # Bestimme die Markerfarbe basierend auf dem SNR
