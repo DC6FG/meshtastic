@@ -35,7 +35,7 @@ def snr_to_color(snr):
     elif snr_scaled <= 0:
         return 'orange'
     elif snr_scaled <= 5:
-        return 'yellow'
+        return 'lightgreen'
     else:
         return 'green'
 
