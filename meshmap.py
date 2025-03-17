@@ -50,11 +50,12 @@ def create_map(nodes):
             latitude = node['position'].get('latitude', None)
             longitude = node['position'].get('longitude', None)
             if latitude and longitude:
-                # Hole den SNR-Wert sicher
+                # Hole den SNR-Wert
                 snr = node.get('snr', None)
-                
-                # Hole den Batteriestatus, falls 'deviceMetrics' existiert
-                battery_level = node.get('deviceMetrics', {}).get('batteryLevel', 'unbekannt')
+
+                # Hole Anzahl der Hops
+                hopsAway = node.get('hopsAway', None)
+
 
                 # Bestimme die Markerfarbe basierend auf dem SNR
                 marker_color = snr_to_color(snr)
@@ -62,7 +63,7 @@ def create_map(nodes):
                 # Füge einen Marker mit den Knoteninformationen hinzu
                 folium.Marker(
                     location=[latitude, longitude],
-                    popup=f"Node ID: {node_id}\n{node['user']['longName']} ({node['user']['shortName']})\nBattery: {battery_level}%\nSNR: {snr} dB",
+                    popup=f"Node ID: {node_id}\n{node['user']['longName']} ({node['user']['shortName']})\nHops: {hopsAway}\nSNR: {snr} dB",
                     icon=folium.Icon(color=marker_color)
                 ).add_to(m)
     
@@ -74,6 +75,7 @@ def create_map(nodes):
 def main():
     device = connect_to_device()
     nodes = get_nodes(device)
+    print(nodes)
     create_map(nodes)
 
 if __name__ == "__main__":
