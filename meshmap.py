@@ -14,10 +14,10 @@ def get_nodes(device):
     nodes = device.nodes
     return nodes
 
-def snr_to_color(snr):
+def snr_to_color(snr, hopsAway):
     """Konvertiert SNR-Werte in Farben, von Rot (niedrig) bis Grün (hoch)."""
-    # Wenn kein SNR-Wert vorhanden ist, setze die Farbe auf Schwarz
-    if snr is None:
+    # Wenn kein SNR-Wert vorhanden ist oder die Anzahl der Hops größer 0, setze die Farbe auf Schwarz
+    if (snr is None) or (hopsAway is not None and hopsAway > 0):
         return 'black'
     
     # Skalierung des SNR-Werts auf den Bereich 0 bis 255 (für RGB-Farben)
@@ -54,11 +54,10 @@ def create_map(nodes):
                 snr = node.get('snr', None)
 
                 # Hole Anzahl der Hops
-                hopsAway = node.get('hopsAway', None)
-
+                hopsAway = node.get('hopsAway')
 
                 # Bestimme die Markerfarbe basierend auf dem SNR
-                marker_color = snr_to_color(snr)
+                marker_color = snr_to_color(snr, hopsAway)
 
                 # Füge einen Marker mit den Knoteninformationen hinzu
                 folium.Marker(
