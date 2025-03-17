@@ -16,7 +16,7 @@ def get_nodes(device):
 def get_my_node_info(device):
     my_node = device.getMyNodeInfo()  # Holt Informationen zum eigenen Knoten
     if my_node:
-        return my_node.get('num'), my_node  # Gibt die Knoten-ID und die Details zurück
+        return my_node.get('user', {}).get('id'), my_node  # Gibt den 'id'-Wert des eigenen Knotens zurück
     return None, None  # Wenn keine Informationen vorhanden sind, None zurückgeben
 
 # Funktion zur Umrechnung des SNR (Signal-to-Noise Ratio) in eine Farbe
@@ -56,12 +56,19 @@ def create_map(nodes, my_node_id, my_node_info):
                 if node_id == my_node_id:
                     own_node = (latitude, longitude)  # Position des eigenen Knotens speichern
 
-                # Hinzufügen eines Markers für den Knoten zur Karte
-                folium.Marker(
-                    location=[latitude, longitude],
-                    popup=f"Node ID: {node_id}\n{node['user']['longName']} ({node['user']['shortName']})\nHops: {hopsAway}\nSNR: {snr} dB",
-                    icon=folium.Icon(color=marker_color)
-                ).add_to(m)
+                    # Marker für den eigenen Knoten hinzufügen und auf blau setzen
+                    folium.Marker(
+                        location=[latitude, longitude],
+                        popup=f"Node ID: {node_id}\n{node['user']['longName']} ({node['user']['shortName']})\nHops: {hopsAway}\nSNR: {snr} dB\nBatterie: {my_node_info['deviceMetrics']['batteryLevel']}%",
+                        icon=folium.Icon(color='blue')  # Eigenen Knoten blau darstellen
+                    ).add_to(m)
+                else:
+                    # Marker für andere Knoten hinzufügen
+                    folium.Marker(
+                        location=[latitude, longitude],
+                        popup=f"Node ID: {node_id}\n{node['user']['longName']} ({node['user']['shortName']})\nHops: {hopsAway}\nSNR: {snr} dB",
+                        icon=folium.Icon(color=marker_color)  # Andere Knoten mit SNR-Farbe darstellen
+                    ).add_to(m)
 
     # Infobox für den eigenen Knoten oben links auf der Karte hinzufügen
     if my_node_info:
@@ -73,7 +80,7 @@ def create_map(nodes, my_node_id, my_node_info):
             <h4>Eigener Knoten</h4>
             <p><strong>ID:</strong> {my_node_id}</p>
             <p><strong>Name:</strong> {my_node_info['user']['longName']} ({my_node_info['user']['shortName']})</p>
-            <p><strong>Battery:</strong> {my_node_info.get('batteryLevel', 'N/A')}%</p>
+            <p><strong>Battery:</strong> {my_node_info['deviceMetrics']['batteryLevel']}%</p>
         </div>
         """
         m.get_root().html.add_child(folium.Element(info_html))  # Fügt die Infobox der Karte hinzu
